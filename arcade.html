@@ -150,8 +150,8 @@
       background: rgba(0,0,0,0.6);
     }
     .grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      display: flex;
+      flex-wrap: wrap;
       gap: 18px;
       margin-top: 6px;
     }
@@ -168,6 +168,7 @@
       animation: fadeUp 420ms ease both;
       letter-spacing: 0.4px;
       line-height: 1.35;
+      flex: 1 1 240px;
     }
     /* DELETE THESE BLOCKS COMPLETELY: */
     .card::before {
@@ -367,6 +368,15 @@
           <span class="timer" data-timer-for="sedecordle"></span>
         </div>
       </article>
+      <article class="card" data-game-id="crosswordle" data-url="https://crosswordle.org/">
+        <div class="badge">[WORD]</div>
+        <h3><img class="mini-img" src="https://www.google.com/s2/favicons?domain=crosswordle.org&sz=64" alt="">Crosswordle</h3>
+        <p class="description">A mix of Wordle and a crossword puzzle.</p>
+        <div class="actions">
+          <button class="done-btn" data-done-id="crosswordle">Mark done</button>
+          <span class="timer" data-timer-for="crosswordle"></span>
+        </div>
+      </article>
     </div>
 
     <div class="section-title"><span class="tag">[GEO]</span> GEOGRAPHY</div>
@@ -400,6 +410,15 @@
         <div class="actions">
           <button class="done-btn" data-done-id="narutodle">Mark done</button>
           <span class="timer" data-timer-for="narutodle"></span>
+        </div>
+      </article>
+      <article class="card" data-game-id="atyubanim" data-url="https://animadle-gamma.vercel.app/">
+        <div class="badge">[ANIME]</div>
+        <h3><img class="mini-img" src="https://i.imgur.com/AWG3Joz.png" alt="">AtyubAnim</h3>
+        <p class="description">Anime Guessing Game</p>
+        <div class="actions">
+          <button class="done-btn" data-done-id="atyubanim">Mark done</button>
+          <span class="timer" data-timer-for="atyubanim"></span>
         </div>
       </article>
       <article class="card" data-game-id="pokedle-classic" data-url="https://pokedle.net/classic">
@@ -536,7 +555,15 @@
           <span class="timer" data-timer-for="poeltl"></span>
         </div>
       </article>
-    </div>
+      <article class="card" data-game-id="fightdle" data-url="https://www.fightdle.com/GUESSFIGHTER/fighterguessindex.html">
+        <div class="badge">[SPORT]</div>
+        <h3><img class="mini-img" src="https://city-png.b-cdn.net/preview/preview_public/uploads/preview/ufc-ultimate-fighting-championship-white-logo-hd-png-701751712583496etkmcteh3r.png" alt="">Fightdle</h3>
+        <p class="description">Fighting Game Guessing Game</p>
+        <div class="actions">
+          <button class="done-btn" data-done-id="fightdle">Mark done</button>
+          <span class="timer" data-timer-for="fightdle"></span>
+        </div>
+      </article>
   </main>
 
   <footer>
