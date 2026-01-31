@@ -1,0 +1,826 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>IFC Daily Games · Arcade</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=VT323&family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #040608;
+      --grid: rgba(0,255,0,0.08);
+      --grid-strong: rgba(0,255,0,0.16);
+      --card: rgba(0, 0, 0, 0.8);
+      --stroke: #39ff14;
+      --stroke-soft: rgba(57,255,20,0.5);
+      --stroke-weak: rgba(57,255,20,0.25);
+      --text: #c1ffd7;
+      --muted: #6de1a5;
+      --accent: #ff3ed6;
+      --shadow: 0 0 20px rgba(57,255,20,0.35);
+      --shadow-strong: 0 0 30px rgba(57,255,20,0.55);
+      --success: #7CFF6B;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: 'VT323', monospace;
+      background-color: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      position: relative;
+      overflow-x: hidden;
+    }
+    body:before, body:after {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+    }
+    body:before {
+      background-image:
+        linear-gradient(var(--grid) 1px, transparent 1px),
+        linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+      background-size: 40px 40px;
+      opacity: 0.7;
+      z-index: 0;
+    }
+    body:after {
+      background: radial-gradient(circle at 50% 20%, rgba(255,62,214,0.12), transparent 30%),
+                  radial-gradient(circle at 20% 70%, rgba(57,255,20,0.12), transparent 28%),
+                  radial-gradient(circle at 80% 80%, rgba(0,255,255,0.08), transparent 30%);
+      z-index: 0;
+    }
+    main, header, footer { position: relative; z-index: 1; }
+    header {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 32px 24px 6px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 14px;
+      text-align: center;
+    }
+    .frame {
+      width: 100%;
+      border: 2px solid var(--stroke);
+      box-shadow: var(--shadow);
+      border-radius: 10px;
+      padding: 26px 16px 22px;
+      position: relative;
+      overflow: hidden;
+      background: radial-gradient(circle at 50% 15%, rgba(255,62,214,0.12), transparent 30%),
+                  rgba(0,0,0,0.6);
+    }
+    .frame:before {
+      content: "";
+      position: absolute;
+      inset: 8px;
+      border: 1px solid var(--stroke-weak);
+      pointer-events: none;
+    }
+    .badge-top {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 14px;
+      border: 2px solid var(--stroke);
+      color: var(--text);
+      background: rgba(0,0,0,0.65);
+      border-radius: 6px;
+      box-shadow: var(--shadow);
+      font-size: 18px;
+      letter-spacing: 1px;
+    }
+    .title {
+      font-size: 64px;
+      margin: 12px 0 4px;
+      color: var(--stroke);
+      text-shadow: 0 0 16px rgba(57,255,20,0.6), 0 0 30px rgba(255,62,214,0.45);
+    }
+    .title span { color: var(--accent); }
+    .tagline {
+      margin: 6px 0;
+      font-size: 26px;
+      color: var(--text);
+      letter-spacing: 1.6px;
+    }
+    .sub {
+      color: var(--muted);
+      font-size: 18px;
+      letter-spacing: 1.4px;
+    }
+    .palette {
+      margin-top: 18px;
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+    }
+    .swatch {
+      width: 22px;
+      height: 22px;
+      border-radius: 6px;
+      border: 2px solid rgba(255,255,255,0.25);
+      box-shadow: 0 0 10px rgba(0,0,0,0.35);
+      cursor: pointer;
+      transition: transform 120ms ease, box-shadow 120ms ease, border-color 120ms ease;
+    }
+    .swatch:hover { transform: translateY(-2px); box-shadow: 0 0 14px rgba(255,255,255,0.3); border-color: rgba(255,255,255,0.6); }
+    main {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 8px 24px 64px;
+    }
+    .section-title {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      color: var(--stroke);
+      margin: 28px 0 12px;
+      font-size: 22px;
+      letter-spacing: 1px;
+    }
+    .section-title .tag {
+      border: 2px solid var(--stroke);
+      padding: 6px 10px;
+      border-radius: 6px;
+      background: rgba(0,0,0,0.6);
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 18px;
+      margin-top: 6px;
+    }
+    .card {
+      background: var(--card);
+      border: 2px solid var(--stroke-weak);
+      border-radius: 12px;
+      padding: 18px;
+      box-shadow: var(--shadow);
+      position: relative;
+      overflow: hidden;
+      cursor: pointer;
+      transition: transform 140ms ease, box-shadow 140ms ease, border-color 140ms ease, background 140ms ease;
+      animation: fadeUp 420ms ease both;
+      letter-spacing: 0.4px;
+      line-height: 1.35;
+    }
+    .card:after {
+      content: "";
+      position: absolute;
+      inset: -40%;
+      background: linear-gradient(120deg, transparent 0%, rgba(255,255,255,0.08) 50%, transparent 100%);
+      transform: translateX(-100%);
+      transition: transform 300ms ease;
+      pointer-events: none;
+      filter: blur(0.5px);
+    }
+    .card:hover {
+      transform: translateY(-4px);
+      box-shadow: var(--shadow-strong);
+      border-color: var(--stroke);
+      background: radial-gradient(circle at 20% 20%, rgba(57,255,20,0.05), transparent 50%), var(--card);
+    }
+    .card:hover:after {
+      transform: translateX(60%);
+    }
+    .card:active { transform: translateY(-1px) scale(0.995); }
+    .card h3 {
+      margin: 0;
+      font-size: 22px;
+      color: var(--stroke);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      letter-spacing: 0.8px;
+    }
+    .mini-img {
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      object-fit: cover;
+      border: 1px solid var(--stroke-weak);
+      box-shadow: 0 0 10px rgba(0,0,0,0.3);
+    }
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 8px;
+      border-radius: 6px;
+      background: rgba(0,0,0,0.5);
+      border: 1px solid var(--stroke-weak);
+      color: var(--muted);
+      font-size: 14px;
+      letter-spacing: 0.5px;
+    }
+    .description {
+      margin: 8px 0 0;
+      color: var(--muted);
+      font-size: 16px;
+      letter-spacing: 0.6px;
+      line-height: 1.55;
+    }
+    .actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-top: 8px;
+    }
+    .done-btn {
+      padding: 6px 10px;
+      border-radius: 6px;
+      border: 1px solid var(--stroke-weak);
+      background: rgba(0,0,0,0.6);
+      color: var(--text);
+      cursor: pointer;
+      font-family: 'Inter', system-ui;
+      font-weight: 600;
+      font-size: 13px;
+      transition: transform 120ms ease, box-shadow 120ms ease, border-color 120ms ease, background 120ms ease;
+      letter-spacing: 0.4px;
+    }
+    .done-btn:hover { transform: translateY(-1px); box-shadow: 0 8px 18px rgba(0,0,0,0.25); border-color: var(--stroke); }
+    .done-btn.done { background: rgba(124,255,107,0.15); border-color: rgba(124,255,107,0.7); color: #d7ffd5; }
+    .timer { color: var(--muted); font-size: 14px; font-family: 'Inter', system-ui; }
+    .card.completed { border-color: rgba(124,255,107,0.7); box-shadow: 0 0 18px rgba(124,255,107,0.4); }
+    .arcade-toggle-btn {
+      box-shadow: 0 0 12px var(--stroke-weak);
+    }
+    .arcade-toggle-btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 0 20px var(--stroke-soft);
+      border-color: var(--stroke);
+    }
+    .arcade-toggle-btn.active {
+      background: rgba(57,255,20,0.15);
+      border-color: var(--stroke);
+      box-shadow: 0 0 18px var(--stroke-soft);
+      color: var(--stroke);
+    }
+    footer {
+      max-width: 1200px;
+      margin: 0 auto 48px;
+      padding: 0 24px;
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      color: var(--muted);
+      font-size: 16px;
+      letter-spacing: 0.5px;
+    }
+    @keyframes fadeUp { from { opacity:0; transform: translateY(12px);} to { opacity:1; transform: translateY(0);} }
+    @media (max-width: 720px) {
+      .title { font-size: 48px; }
+      .tagline { font-size: 22px; }
+      footer { flex-direction: column; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="frame">
+      <div class="badge-top">🕹 DAILY GAMES HUB</div>
+      <div class="title">IFC <span>GAMES</span></div>
+      <div class="tagline">Your squad's daily challenge hub</div>
+      <div class="sub">&gt; INSERT COIN TO PLAY _</div>
+      <div class="palette">
+        <div class="swatch" data-palette="neo" style="background: linear-gradient(135deg,#39ff14,#ff3ed6);"></div>
+        <div class="swatch" data-palette="blue" style="background: linear-gradient(135deg,#1fb7ff,#00f0ff);"></div>
+        <div class="swatch" data-palette="pink" style="background: linear-gradient(135deg,#ff3ed6,#ff8fd6);"></div>
+        <div class="swatch" data-palette="gold" style="background: linear-gradient(135deg,#ffd700,#ff8f00);"></div>
+        <div class="swatch" data-palette="green" style="background: linear-gradient(135deg,#22c55e,#65ff8f);"></div>
+        <div class="swatch" data-palette="purple" style="background: linear-gradient(135deg,#7c3aed,#9f7aea);"></div>
+      </div>
+      <button id="auto-mark-btn" class="arcade-toggle-btn" style="margin-top: 16px; padding: 10px 18px; border: 2px solid var(--stroke); background: rgba(0,0,0,0.6); color: var(--text); font-family: 'Inter', system-ui; font-weight: 600; font-size: 13px; letter-spacing: 0.5px; cursor: pointer; border-radius: 6px; transition: all 120ms ease; position: relative; overflow: hidden;">
+        <span class="toggle-text">AUTO-MARK: OFF</span>
+      </button>
+    </div>
+  </header>
+
+  <main>
+    <div class="section-title"><span class="tag">T</span> WORD GAMES</div>
+    <div class="grid">
+      <article class="card" data-game-id="wordle" data-url="https://www.nytimes.com/games/wordle/index.html">
+        <div class="badge">[WORD]</div>
+        <h3><img class="mini-img" src="https://www.google.com/s2/favicons?domain=www.nytimes.com&sz=64" alt="">Wordle</h3>
+        <p class="description">Guess the 5-letter word in 6 tries</p>
+        <div class="actions">
+          <button class="done-btn" data-done-id="wordle">Mark done</button>
+          <span class="timer" data-timer-for="wordle"></span>
+        </div>
+      </article>
+      <article class="card" data-game-id="connections" data-url="https://www.nytimes.com/games/connections">
+        <div class="badge">[WORD]</div>
+        <h3><img class="mini-img" src="https://www.google.com/s2/favicons?domain=www.nytimes.com&sz=64" alt="">Connections</h3>
+        <p class="description">Group 16 words into 4 categories</p>
+        <div class="actions">
+          <button class="done-btn" data-done-id="connections">Mark done</button>
+          <span class="timer" data-timer-for="connections"></span>
+        </div>
+      </article>
+      <article class="card" data-game-id="octordle" data-url="https://octordlegame.io/">
+        <div class="badge">[WORD]</div>
+        <h3><img class="mini-img" src="https://www.google.com/s2/favicons?domain=octordlegame.io&sz=64" alt="">Octordle</h3>
+        <p class="description">Solve 8 Wordles at once</p>
+        <div class="actions">
+          <button class="done-btn" data-done-id="octordle">Mark done</button>
+          <span class="timer" data-timer-for="octordle"></span>
+        </div>
+      </article>
+    </div>
+
+    <div class="section-title"><span class="tag">[GEO]</span> GEOGRAPHY</div>
+    <div class="grid">
+      <article class="card" data-game-id="worldle" data-url="https://worldle.teuteuf.fr/">
+        <div class="badge">[GEO]</div>
+        <h3><img class="mini-img" src="https://www.google.com/s2/favicons?domain=worldle.teuteuf.fr&sz=64" alt="">Worldle</h3>
+        <p class="description">Guess the country with distance & direction</p>
+        <div class="actions">
+          <button class="done-btn" data-done-id="worldle">Mark done</button>
+          <span class="timer" data-timer-for="worldle"></span>
+        </div>
+      </article>
+      <article class="card" data-game-id="globle" data-url="https://globle-game.com/">
+        <div class="badge">[GEO]</div>
+        <h3><img class="mini-img" src="https://www.google.com/s2/favicons?domain=globle-game.com&sz=64" alt="">Globle</h3>
+        <p class="description">Hot/Cold heatmap to find the hidden country</p>
+        <div class="actions">
+          <button class="done-btn" data-done-id="globle">Mark done</button>
+          <span class="timer" data-timer-for="globle"></span>
+        </div>
+      </article>
+    </div>
+
+    <div class="section-title"><span class="tag">[ANIME]</span> ANIME & GAMING</div>
+    <div class="grid">
+      <article class="card" data-game-id="narutodle" data-url="https://narutodle.net/">
+        <div class="badge">[ANIME]</div>
+        <h3><img class="mini-img" src="https://www.google.com/s2/favicons?domain=narutodle.net&sz=64" alt="">Narutodle</h3>
+        <p class="description">Name the Naruto character, jutsu, or clan</p>
+        <div class="actions">
+          <button class="done-btn" data-done-id="narutodle">Mark done</button>
+          <span class="timer" data-timer-for="narutodle"></span>
+        </div>
+      </article>
+      <article class="card" data-game-id="pokedle-classic" data-url="https://pokedle.net/classic">
+        <div class="badge">[ANIME]</div>
+        <h3><img class="mini-img" src="https://www.google.com/s2/favicons?domain=pokedle.net&sz=64" alt="">Pokedle Classic</h3>
+        <p class="description">Classic Pokémon guessing—stats & silhouette</p>
+        <div class="actions">
+          <button class="done-btn" data-done-id="pokedle-classic">Mark done</button>
+          <span class="timer" data-timer-for="pokedle-classic"></span>
+        </div>
+      </article>
+      <article class="card" data-game-id="pokedle" data-url="https://pokedle.com/">
+        <div class="badge">[ANIME]</div>
+        <h3><img class="mini-img" src="https://www.google.com/s2/favicons?domain=pokedle.com&sz=64" alt="">Pokedle</h3>
+        <p class="description">Pokédex challenge with new twists</p>
+        <div class="actions">
+          <button class="done-btn" data-done-id="pokedle">Mark done</button>
+          <span class="timer" data-timer-for="pokedle"></span>
+        </div>
+      </article>
+      <article class="card" data-game-id="smashdle" data-url="https://smashdle.net/">
+        <div class="badge">[ANIME]</div>
+        <h3><img class="mini-img" src="https://www.google.com/s2/favicons?domain=smashdle.net&sz=64" alt="">Smashdle</h3>
+        <p class="description">Guess the Smash Bros. fighter</p>
+        <div class="actions">
+          <button class="done-btn" data-done-id="smashdle">Mark done</button>
+          <span class="timer" data-timer-for="smashdle"></span>
+        </div>
+      </article>
+      <article class="card" data-game-id="mangadle" data-url="https://mangadle.net/">
+        <div class="badge">[ANIME]</div>
+        <h3><img class="mini-img" src="https://www.google.com/s2/favicons?domain=mangadle.net&sz=64" alt="">Mangadle</h3>
+        <p class="description">Identify the manga from panels or prompts</p>
+        <div class="actions">
+          <button class="done-btn" data-done-id="mangadle">Mark done</button>
+          <span class="timer" data-timer-for="mangadle"></span>
+        </div>
+      </article>
+      <article class="card" data-game-id="squirdle" data-url="https://squirdle.fireblend.com/daily.html">
+        <div class="badge">[ANIME]</div>
+        <h3><img class="mini-img" src="https://www.google.com/s2/favicons?domain=squirdle.fireblend.com&sz=64" alt="">Squirdle</h3>
+        <p class="description">Daily Pokémon with type/gen/height clues</p>
+        <div class="actions">
+          <button class="done-btn" data-done-id="squirdle">Mark done</button>
+          <span class="timer" data-timer-for="squirdle"></span>
+        </div>
+      </article>
+      <article class="card" data-game-id="onepiecedle" data-url="https://onepiecedle.net/">
+        <div class="badge">[ANIME]</div>
+        <h3><img class="mini-img" src="https://www.google.com/s2/favicons?domain=onepiecedle.net&sz=64" alt="">OnePiecedle</h3>
+        <p class="description">Daily One Piece guessing challenge</p>
+        <div class="actions">
+          <button class="done-btn" data-done-id="onepiecedle">Mark done</button>
+          <span class="timer" data-timer-for="onepiecedle"></span>
+        </div>
+      </article>
+    </div>
+
+    <div class="section-title"><span class="tag">[MUSIC]</span> MUSIC</div>
+    <div class="grid">
+      <article class="card" data-game-id="bandle" data-url="https://bandle.app/menu">
+        <div class="badge">[MUSIC]</div>
+        <h3><img class="mini-img" src="https://www.google.com/s2/favicons?domain=bandle.app&sz=64" alt="">Bandle</h3>
+        <p class="description">Listen to clips and name the band</p>
+        <div class="actions">
+          <button class="done-btn" data-done-id="bandle">Mark done</button>
+          <span class="timer" data-timer-for="bandle"></span>
+        </div>
+      </article>
+      <article class="card" data-game-id="animdle" data-url="https://animdle.com/opening">
+        <div class="badge">[MUSIC]</div>
+        <h3><img class="mini-img" src="https://www.google.com/s2/favicons?domain=animdle.com&sz=64" alt="">Animdle</h3>
+        <p class="description">Guess the anime from the opening</p>
+        <div class="actions">
+          <button class="done-btn" data-done-id="animdle">Mark done</button>
+          <span class="timer" data-timer-for="animdle"></span>
+        </div>
+      </article>
+      <article class="card" data-game-id="guesstheopening" data-url="https://guesstheopening.com/anime">
+        <div class="badge">[MUSIC]</div>
+        <h3><img class="mini-img" src="https://www.google.com/s2/favicons?domain=guesstheopening.com&sz=64" alt="">Guess The Opening</h3>
+        <p class="description">Anime opening quiz—name the show</p>
+        <div class="actions">
+          <button class="done-btn" data-done-id="guesstheopening">Mark done</button>
+          <span class="timer" data-timer-for="guesstheopening"></span>
+        </div>
+      </article>
+    </div>
+
+    <div class="section-title"><span class="tag">[SPORT]</span> SPORTS & STATS</div>
+    <div class="grid">
+      <article class="card" data-game-id="rankdle" data-url="https://rankdle.com/">
+        <div class="badge">[SPORT]</div>
+        <h3><img class="mini-img" src="https://www.google.com/s2/favicons?domain=rankdle.com&sz=64" alt="">Rankdle</h3>
+        <p class="description">Rank the highlights correctly</p>
+        <div class="actions">
+          <button class="done-btn" data-done-id="rankdle">Mark done</button>
+          <span class="timer" data-timer-for="rankdle"></span>
+        </div>
+      </article>
+      <article class="card" data-game-id="weddle" data-url="https://www.weddlegame.com/">
+        <div class="badge">[SPORT]</div>
+        <h3><img class="mini-img" src="https://www.google.com/s2/favicons?domain=www.weddlegame.com&sz=64" alt="">Weddle</h3>
+        <p class="description">NFL player guessing game</p>
+        <div class="actions">
+          <button class="done-btn" data-done-id="weddle">Mark done</button>
+          <span class="timer" data-timer-for="weddle"></span>
+        </div>
+      </article>
+      <article class="card" data-game-id="footdle" data-url="https://footdle.com/">
+        <div class="badge">[SPORT]</div>
+        <h3><img class="mini-img" src="https://www.google.com/s2/favicons?domain=footdle.com&sz=64" alt="">Footdle</h3>
+        <p class="description">Footballer (soccer) guessing</p>
+        <div class="actions">
+          <button class="done-btn" data-done-id="footdle">Mark done</button>
+          <span class="timer" data-timer-for="footdle"></span>
+        </div>
+      </article>
+      <article class="card" data-game-id="poeltl" data-url="https://poeltl.nbpa.com/landing-page">
+        <div class="badge">[SPORT]</div>
+        <h3><img class="mini-img" src="https://upload.wikimedia.org/wikipedia/commons/7/7a/Basketball.png" alt="">Poeltl</h3>
+        <p class="description">NBA silhouette + stat filters</p>
+        <div class="actions">
+          <button class="done-btn" data-done-id="poeltl">Mark done</button>
+          <span class="timer" data-timer-for="poeltl"></span>
+        </div>
+      </article>
+    </div>
+  </main>
+
+  <footer>
+    <div>Made for IFC • Neon arcade hub.</div>
+    <div>Tip: Bookmark this page for daily runs.</div>
+  </footer>
+
+  <script>
+    // Palette switching
+    const palettes = {
+      neo:    { stroke:"#39ff14", strokeSoft:"rgba(57,255,20,0.5)", strokeWeak:"rgba(57,255,20,0.25)", accent:"#ff3ed6", card:"#000000cc" },
+      blue:   { stroke:"#1fb7ff", strokeSoft:"rgba(31,183,255,0.5)", strokeWeak:"rgba(31,183,255,0.25)", accent:"#00f0ff", card:"#001622cc" },
+      pink:   { stroke:"#ff3ed6", strokeSoft:"rgba(255,62,214,0.5)", strokeWeak:"rgba(255,62,214,0.25)", accent:"#ff8fd6", card:"#1a0014cc" },
+      gold:   { stroke:"#ffd700", strokeSoft:"rgba(255,215,0,0.5)", strokeWeak:"rgba(255,215,0,0.25)", accent:"#ff8f00", card:"#1b1200cc" },
+      green:  { stroke:"#22c55e", strokeSoft:"rgba(34,197,94,0.5)", strokeWeak:"rgba(34,197,94,0.25)", accent:"#65ff8f", card:"#001a0ccc" },
+      purple: { stroke:"#7c3aed", strokeSoft:"rgba(124,58,237,0.5)", strokeWeak:"rgba(124,58,237,0.25)", accent:"#9f7aea", card:"#12001acc" }
+    };
+    function applyPalette(name) {
+      const p = palettes[name] || palettes.neo;
+      const r = document.documentElement;
+      r.style.setProperty('--stroke', p.stroke);
+      r.style.setProperty('--stroke-soft', p.strokeSoft);
+      r.style.setProperty('--stroke-weak', p.strokeWeak);
+      r.style.setProperty('--accent', p.accent);
+      r.style.setProperty('--card', p.card);
+      r.style.setProperty('--shadow', `0 0 20px ${p.strokeSoft}`);
+      r.style.setProperty('--shadow-strong', `0 0 30px ${p.strokeSoft}`);
+    }
+    document.querySelectorAll('.swatch').forEach(s => {
+      s.addEventListener('click', () => applyPalette(s.dataset.palette));
+    });
+    applyPalette('neo');
+
+    // Auto-mark toggle button
+    const autoMarkBtn = document.getElementById('auto-mark-btn');
+    if (autoMarkBtn) {
+      const isActive = localStorage.getItem('ifc-arcade-auto-mark') === 'true';
+      if (isActive) {
+        autoMarkBtn.classList.add('active');
+        autoMarkBtn.querySelector('.toggle-text').textContent = 'AUTO-MARK: ON';
+      } else {
+        autoMarkBtn.querySelector('.toggle-text').textContent = 'AUTO-MARK: OFF';
+      }
+      
+      autoMarkBtn.addEventListener('click', () => {
+        const isNowActive = !autoMarkBtn.classList.contains('active');
+        if (isNowActive) {
+          autoMarkBtn.classList.add('active');
+          autoMarkBtn.querySelector('.toggle-text').textContent = 'AUTO-MARK: ON';
+          localStorage.setItem('ifc-arcade-auto-mark', 'true');
+        } else {
+          autoMarkBtn.classList.remove('active');
+          autoMarkBtn.querySelector('.toggle-text').textContent = 'AUTO-MARK: OFF';
+          localStorage.setItem('ifc-arcade-auto-mark', 'false');
+        }
+      });
+    }
+
+    // Timers (default midnight ET; adjust per-game if desired)
+    const resets = {
+      wordle: { hour: 0, minute: 0, tz: 'America/New_York' },
+      connections: { hour: 0, minute: 0, tz: 'America/New_York' },
+      octordle: { hour: 0, minute: 0, tz: 'America/New_York' },
+      worldle: { hour: 0, minute: 0, tz: 'America/New_York' },
+      globle: { hour: 0, minute: 0, tz: 'America/New_York' },
+      narutodle: { hour: 0, minute: 0, tz: 'America/Chicago' },
+      'pokedle-classic': { hour: 0, minute: 0, tz: 'America/Chicago' },
+      pokedle: { hour: 19, minute: 0, tz: 'America/New_York' },
+      smashdle: { hour: 0, minute: 0, tz: 'America/Chicago' },
+      mangadle: { hour: 0, minute: 0, tz: 'America/New_York' },
+      squirdle: { hour: 0, minute: 0, tz: 'America/New_York' },
+      bandle: { hour: 0, minute: 0, tz: 'America/New_York' },
+      rankdle: { hour: 21, minute: 0, tz: 'America/New_York' },
+      weddle: { hour: 0, minute: 0, tz: 'America/New_York' },
+      footdle: { hour: 0, minute: 0, tz: 'America/New_York' },
+      poeltl: { hour: 0, minute: 0, tz: 'America/New_York' },
+      animdle: { hour: 10, minute: 0, tz: 'America/New_York' },
+      guesstheopening: { hour: 0, minute: 0, tz: 'America/New_York' },
+      onepiecedle: { hour: 0, minute: 0, tz: 'America/Chicago' }
+    };
+
+    // Completion tracking with per-game reset logic
+    const STORAGE_KEY = 'ifc-arcade-completed';
+    function getLastResetTime(cfg) {
+      const { hour, minute, tz } = cfg;
+      const now = new Date();
+      const tzNow = new Date(now.toLocaleString('en-US', { timeZone: tz }));
+      const lastReset = new Date(tzNow);
+      lastReset.setHours(hour, minute, 0, 0);
+      if (lastReset > tzNow) lastReset.setDate(lastReset.getDate() - 1);
+      return lastReset.getTime();
+    }
+    function loadCompleted() {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      try { return raw ? JSON.parse(raw) : {}; } catch { return {}; }
+    }
+    function saveCompleted(data) {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+    }
+    function isCompletedForCurrentPeriod(gameId, cfg) {
+      const data = loadCompleted();
+      const entry = data[gameId];
+      if (!entry) return false;
+      const lastReset = getLastResetTime(cfg);
+      return entry.lastReset >= lastReset;
+    }
+    function markCompleted(gameId, cfg) {
+      const data = loadCompleted();
+      data[gameId] = { lastReset: getLastResetTime(cfg) };
+      saveCompleted(data);
+    }
+    function clearCompleted(gameId) {
+      const data = loadCompleted();
+      delete data[gameId];
+      saveCompleted(data);
+    }
+    document.querySelectorAll('[data-game-id]').forEach(card => {
+      const id = card.dataset.gameId;
+      const btn = card.querySelector(`[data-done-id="${id}"]`);
+      const cfg = resets[id] || resets.wordle;
+      const isDone = isCompletedForCurrentPeriod(id, cfg);
+      if (isDone) {
+        card.classList.add('completed');
+        btn.classList.add('done');
+        btn.textContent = 'Done today';
+      } else {
+        btn.textContent = 'Mark done';
+      }
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const nowDone = !isCompletedForCurrentPeriod(id, cfg);
+        if (nowDone) {
+          markCompleted(id, cfg);
+        } else {
+          clearCompleted(id);
+        }
+        card.classList.toggle('completed', nowDone);
+        btn.classList.toggle('done', nowDone);
+        btn.textContent = nowDone ? 'Done today' : 'Mark done';
+      });
+      card.addEventListener('click', () => {
+        const url = card.dataset.url;
+        if (url) {
+          const autoMark = localStorage.getItem('ifc-arcade-auto-mark') === 'true';
+          
+          if (autoMark) {
+            // Auto-mark as done immediately when clicking
+            if (!isCompletedForCurrentPeriod(id, cfg)) {
+              markCompleted(id, cfg);
+              card.classList.add('completed');
+              btn.classList.add('done');
+              btn.textContent = 'Done today';
+            }
+          } else {
+            // Open game and monitor the window
+            const gameWindow = window.open(url, '_blank', 'noopener');
+            
+            if (gameWindow) {
+              // Track click time
+              const clickData = JSON.parse(localStorage.getItem('ifc-arcade-clicks') || '{}');
+              clickData[id] = { time: Date.now(), windowClosed: false };
+              localStorage.setItem('ifc-arcade-clicks', JSON.stringify(clickData));
+              
+              // Monitor if window closes (user might have finished)
+              const checkWindow = setInterval(() => {
+                if (gameWindow.closed) {
+                  clearInterval(checkWindow);
+                  const clickData = JSON.parse(localStorage.getItem('ifc-arcade-clicks') || '{}');
+                  if (clickData[id]) {
+                    clickData[id].windowClosed = true;
+                    clickData[id].closeTime = Date.now();
+                    localStorage.setItem('ifc-arcade-clicks', JSON.stringify(clickData));
+                    
+                    // If window was open for 1+ minute, likely they played it
+                    const timeOpen = clickData[id].closeTime - clickData[id].time;
+                    if (timeOpen >= 60 * 1000) { // 1 minute minimum
+                      if (!isCompletedForCurrentPeriod(id, cfg)) {
+                        markCompleted(id, cfg);
+                        card.classList.add('completed');
+                        btn.classList.add('done');
+                      }
+                      delete clickData[id];
+                      localStorage.setItem('ifc-arcade-clicks', JSON.stringify(clickData));
+                    }
+                  }
+                }
+              }, 1000); // Check every second
+              
+              // Also check when our window regains focus
+              const focusHandler = () => {
+                if (document.hasFocus() && gameWindow.closed) {
+                  clearInterval(checkWindow);
+                  window.removeEventListener('focus', focusHandler);
+                  const clickData = JSON.parse(localStorage.getItem('ifc-arcade-clicks') || '{}');
+                  if (clickData[id] && clickData[id].windowClosed) {
+                    const timeOpen = clickData[id].closeTime - clickData[id].time;
+                    if (timeOpen >= 60 * 1000) {
+                      if (!isCompletedForCurrentPeriod(id, cfg)) {
+                        markCompleted(id, cfg);
+                        card.classList.add('completed');
+                        btn.classList.add('done');
+                      }
+                      delete clickData[id];
+                      localStorage.setItem('ifc-arcade-clicks', JSON.stringify(clickData));
+                    }
+                  }
+                }
+              };
+              window.addEventListener('focus', focusHandler);
+            }
+          }
+        }
+      });
+    });
+
+    // Auto-mark as done when user returns after playing (fallback for old tracking)
+    function checkReturnedGames() {
+      const clickData = JSON.parse(localStorage.getItem('ifc-arcade-clicks') || '{}');
+      const now = Date.now();
+      const MIN_PLAY_TIME = 3 * 60 * 1000; // 3 minutes minimum for fallback
+      
+      Object.keys(clickData).forEach(id => {
+        const entry = clickData[id];
+        // Handle old format (just timestamp) or new format (object)
+        const clickTime = typeof entry === 'number' ? entry : entry.time;
+        const timeAway = now - clickTime;
+        
+        // If window was closed and enough time passed, or if it's been 3+ minutes (fallback)
+        if (entry.windowClosed && entry.closeTime) {
+          const timeOpen = entry.closeTime - clickTime;
+          if (timeOpen >= 60 * 1000) { // 1 minute minimum
+            const cfg = resets[id] || resets.wordle;
+            if (!isCompletedForCurrentPeriod(id, cfg)) {
+              markCompleted(id, cfg);
+              const card = document.querySelector(`[data-game-id="${id}"]`);
+              if (card) {
+                const btn = card.querySelector(`[data-done-id="${id}"]`);
+                card.classList.add('completed');
+                btn.classList.add('done');
+              }
+            }
+            delete clickData[id];
+          }
+        } else if (timeAway >= MIN_PLAY_TIME) {
+          // Fallback: if user was away for 3+ minutes, auto-mark as done
+          const cfg = resets[id] || resets.wordle;
+          if (!isCompletedForCurrentPeriod(id, cfg)) {
+            markCompleted(id, cfg);
+            const card = document.querySelector(`[data-game-id="${id}"]`);
+            if (card) {
+              const btn = card.querySelector(`[data-done-id="${id}"]`);
+              card.classList.add('completed');
+              btn.classList.add('done');
+              btn.textContent = 'Done today';
+            }
+          }
+          delete clickData[id];
+        }
+      });
+      localStorage.setItem('ifc-arcade-clicks', JSON.stringify(clickData));
+    }
+
+    // Check when page becomes visible (user returns)
+    document.addEventListener('visibilitychange', () => {
+      if (!document.hidden) {
+        checkReturnedGames();
+      }
+    });
+
+    // Also check on page load in case user navigated back
+    checkReturnedGames();
+
+    function msToNextReset(cfg) {
+      const { hour, minute, tz } = cfg;
+      const now = new Date();
+      const tzNow = new Date(now.toLocaleString('en-US', { timeZone: tz }));
+      const next = new Date(tzNow);
+      next.setHours(hour, minute, 0, 0);
+      if (next <= tzNow) next.setDate(next.getDate() + 1);
+      return next - tzNow;
+    }
+    function format(ms) {
+      const totalSec = Math.max(0, Math.floor(ms / 1000));
+      const h = String(Math.floor(totalSec / 3600)).padStart(2,'0');
+      const m = String(Math.floor((totalSec % 3600)/60)).padStart(2,'0');
+      const s = String(totalSec % 60).padStart(2,'0');
+      return `${h}:${m}:${s}`;
+    }
+    function tzAbbr(tz) {
+      try {
+        const parts = new Intl.DateTimeFormat('en-US', { timeZone: tz, timeZoneName: 'short' })
+          .formatToParts(new Date());
+        const found = parts.find(p => p.type === 'timeZoneName');
+        return found ? found.value : tz;
+      } catch {
+        return tz;
+      }
+    }
+    const timers = document.querySelectorAll('[data-timer-for]');
+    function tick() {
+      timers.forEach(el => {
+        const id = el.dataset.timerFor;
+        const cfg = resets[id] || resets.wordle;
+        const ms = msToNextReset(cfg);
+        el.textContent = `Resets in ${format(ms)} (${tzAbbr(cfg.tz)})`;
+        // Auto-clear completion if reset has passed
+        const card = document.querySelector(`[data-game-id="${id}"]`);
+        if (card) {
+          const btn = card.querySelector(`[data-done-id="${id}"]`);
+          const wasDone = card.classList.contains('completed');
+          const isDone = isCompletedForCurrentPeriod(id, cfg);
+          if (wasDone && !isDone) {
+            card.classList.remove('completed');
+            btn.classList.remove('done');
+            btn.textContent = 'Mark done';
+          }
+        }
+      });
+    }
+    tick();
+    setInterval(tick, 1000);
+
+    // Stagger entrance
+    document.querySelectorAll('.card').forEach((card, idx) => {
+      card.style.animationDelay = `${idx * 40}ms`;
+    });
+  </script>
+</body>
+</html>
+

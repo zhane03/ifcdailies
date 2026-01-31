@@ -1,0 +1,614 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>IFC Daily Games · Teuteuf Style</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #0c1a1a;
+      --panel: rgba(255,255,255,0.06);
+      --card: rgba(14, 30, 30, 0.85);
+      --card-border: rgba(34,197,182,0.25);
+      --text: #e8fbf7;
+      --muted: #9bd6cc;
+      --accent: #22c55e;
+      --accent-2: #10b981;
+      --shadow: 0 18px 55px rgba(0,0,0,0.35);
+      --radius-lg: 18px;
+      --radius-sm: 12px;
+      --success: #65d26e;
+      --bg1: rgba(34,197,182,0.18);
+      --bg2: rgba(16,185,129,0.20);
+      --bg3: rgba(0,0,0,0.4);
+      --bg-base: #0c1a1a;
+    }
+    body[data-theme="light"] {
+      color-scheme: light;
+      --bg: #f7fffc;
+      --panel: rgba(0,0,0,0.04);
+      --card: #ffffff;
+      --card-border: rgba(16,185,129,0.35);
+      --text: #0b1a16;
+      --muted: #4b6b63;
+      --accent: #0ea5e9;
+      --accent-2: #22c55e;
+      --shadow: 0 12px 36px rgba(0,0,0,0.12);
+      --success: #2f9e44;
+      --bg1: rgba(14,165,233,0.14);
+      --bg2: rgba(34,197,94,0.12);
+      --bg3: rgba(0,0,0,0.08);
+      --bg-base: #f7fffc;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: radial-gradient(circle at 18% 20%, var(--bg1), transparent 32%),
+                  radial-gradient(circle at 82% 10%, var(--bg2), transparent 30%),
+                  radial-gradient(circle at 60% 78%, var(--bg3), transparent 36%),
+                  linear-gradient(180deg, #102424 0%, var(--bg-base) 100%);
+      color: var(--text);
+      min-height: 100vh;
+      transition: background 250ms ease, color 250ms ease;
+    }
+    header {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 44px 24px 16px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 16px;
+    }
+    .brand {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+    }
+    .mark-wrap {
+      position: relative;
+      width: 120px;
+      height: 120px;
+      display: grid;
+      place-items: center;
+    }
+    .mark {
+      width: 120px;
+      height: 120px;
+      border-radius: 28px;
+      background: #f2f2f2;
+      background-image: url("./lion-ifc.png");
+      background-size: contain;
+      background-position: center;
+      background-repeat: no-repeat;
+      box-shadow: var(--shadow);
+      border: 1px solid rgba(34,197,182,0.35);
+      position: relative;
+      overflow: hidden;
+    }
+    .mark-label { display: none; }
+    h1 {
+      margin: 0;
+      font-size: 28px;
+      letter-spacing: -0.02em;
+      text-align: center;
+    }
+    .subtitle {
+      margin: 4px 0 0;
+      color: var(--muted);
+      font-weight: 500;
+      text-align: center;
+    }
+    .actions-row {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+    .pill {
+      padding: 10px 16px;
+      border-radius: 999px;
+      background: var(--panel);
+      color: var(--muted);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      font-size: 14px;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      backdrop-filter: blur(6px);
+    }
+    .toggle {
+      padding: 10px 14px;
+      border-radius: 12px;
+      border: 1px solid rgba(255,255,255,0.08);
+      background: linear-gradient(135deg, rgba(34,197,182,0.22), rgba(14,165,233,0.26));
+      color: var(--text);
+      cursor: pointer;
+      font-weight: 600;
+      transition: transform 120ms ease, box-shadow 120ms ease;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+    }
+    .toggle:hover { transform: translateY(-1px); box-shadow: 0 10px 24px rgba(0,0,0,0.18); }
+    main {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 24px 64px;
+    }
+    .hero {
+      background: linear-gradient(135deg, rgba(34,197,182,0.18), rgba(14,165,233,0.18));
+      border: 1px solid rgba(34,197,182,0.25);
+      border-radius: var(--radius-lg);
+      padding: 28px;
+      box-shadow: var(--shadow);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+      color: var(--text);
+    }
+    .hero h2 { margin: 0 0 8px; font-size: 22px; letter-spacing: -0.01em; }
+    .hero p { margin: 0; color: var(--muted); max-width: 640px; line-height: 1.5; }
+    .hero small { color: var(--muted); }
+    .grid {
+      margin-top: 28px;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 16px;
+    }
+    .card {
+      background: var(--card);
+      border-radius: var(--radius-lg);
+      padding: 18px;
+      border: 1px solid var(--card-border);
+      display: grid;
+      gap: 10px;
+      position: relative;
+      overflow: hidden;
+      min-height: 170px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+      transition: transform 160ms ease, box-shadow 160ms ease, border-color 160ms ease, background 160ms ease;
+      animation: fadeUp 420ms ease both;
+      cursor: pointer;
+    }
+    .card:hover {
+      transform: translateY(-4px) scale(1.01);
+      box-shadow: 0 16px 40px rgba(0,0,0,0.28);
+      border-color: rgba(34,197,182,0.65);
+      background: linear-gradient(180deg, rgba(34,197,182,0.08), var(--card));
+    }
+    body[data-theme="light"] .card:hover { border-color: rgba(34,197,182,0.55); background: linear-gradient(180deg, rgba(34,197,182,0.05), var(--card)); }
+    .card:active { transform: translateY(-1px) scale(0.995); }
+    .card:before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle at 20% 20%, rgba(34,197,182,0.14), transparent 45%),
+                  radial-gradient(circle at 80% 10%, rgba(14,165,233,0.12), transparent 45%);
+      opacity: 0.9;
+      pointer-events: none;
+    }
+    .card h3 {
+      margin: 0;
+      font-size: 17px;
+      letter-spacing: -0.01em;
+      position: relative;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: var(--text);
+    }
+    .mini-img {
+      width: 34px;
+      height: 34px;
+      border-radius: 12px;
+      background: #0a0f1c;
+      object-fit: cover;
+      box-shadow: 0 6px 16px rgba(0,0,0,0.25);
+      border: 1px solid rgba(255,255,255,0.16);
+      flex-shrink: 0;
+    }
+    .badge {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.06);
+      color: var(--muted);
+      font-size: 13px;
+      border: 1px solid rgba(255, 255, 255, 0.05);
+    }
+    .description {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.5;
+      position: relative;
+    }
+    .actions {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      flex-wrap: wrap;
+      position: relative;
+    }
+    .done-btn {
+      padding: 8px 12px;
+      border-radius: 10px;
+      border: 1px solid rgba(255,255,255,0.08);
+      background: rgba(255,255,255,0.08);
+      color: var(--text);
+      cursor: pointer;
+      font-weight: 600;
+      transition: transform 120ms ease, box-shadow 120ms ease, background 120ms ease;
+    }
+    .done-btn:hover { transform: translateY(-1px); box-shadow: 0 8px 20px rgba(0,0,0,0.18); }
+    .done-btn.done {
+      background: rgba(101,210,110,0.16);
+      border-color: rgba(101,210,110,0.45);
+      color: #caf7cf;
+    }
+    .timer { color: var(--muted); font-size: 13px; }
+    footer {
+      max-width: 1200px;
+      margin: 0 auto 52px;
+      padding: 0 24px;
+      color: var(--muted);
+      font-size: 14px;
+      display: flex;
+      justify-content: space-between;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(12px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @media (max-width: 720px) {
+      header { flex-direction: column; align-items: center; }
+      .hero { flex-direction: column; align-items: flex-start; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand">
+      <div class="mark-wrap">
+        <div class="mark"></div>
+        <div class="mark-label">IFC</div>
+      </div>
+      <div>
+        <h1>IFC Daily Games</h1>
+        <p class="subtitle">Teuteuf-inspired launchpad for the crew.</p>
+      </div>
+    </div>
+    <div class="actions-row">
+      <div class="pill">Updated daily · Open in new tab</div>
+      <button class="toggle" id="theme-toggle">Toggle light/dark</button>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div>
+        <h2>Jump in, rack up wins, brag later.</h2>
+        <p>All the IFC squad links with a teal/green Teuteuf vibe. Click any card to launch; track completions and reset times.</p>
+      </div>
+      <small>Built for IFC · Launch-friendly</small>
+    </section>
+
+    <div class="grid">
+      <!-- Cards replicated from main site -->
+      <article class="card" data-game-id="wordle" data-url="https://www.nytimes.com/games/wordle/index.html">
+        <div class="badge">Word &amp; Logic</div>
+        <h3><img class="mini-img" src="https://www.google.com/s2/favicons?domain=www.nytimes.com&sz=64" alt="">Wordle</h3>
+        <p class="description">The classic five-letter daily. One puzzle for everyone, shareable grids for bragging rights.</p>
+        <div class="actions">
+          <span class="badge">NYT</span>
+          <button class="done-btn" data-done-id="wordle">Mark done</button>
+          <span class="timer" data-timer-for="wordle"></span>
+        </div>
+      </article>
+
+      <article class="card" data-game-id="connections" data-url="https://www.nytimes.com/games/connections">
+        <div class="badge">Word &amp; Logic</div>
+        <h3><img class="mini-img" src="https://www.google.com/s2/favicons?domain=www.nytimes.com&sz=64" alt="">Connections</h3>
+        <p class="description">Group the words into four tidy sets before strikes run out.</p>
+        <div class="actions">
+          <span class="badge">NYT</span>
+          <button class="done-btn" data-done-id="connections">Mark done</button>
+          <span class="timer" data-timer-for="connections"></span>
+        </div>
+      </article>
+
+      <article class="card" data-game-id="octordle" data-url="https://octordlegame.io/">
+        <div class="badge">Word &amp; Logic</div>
+        <h3><img class="mini-img" src="https://www.google.com/s2/favicons?domain=octordlegame.io&sz=64" alt="">Octordle</h3>
+        <p class="description">Eight Wordles at once, 13 guesses total. Chaos mode for the word champs.</p>
+        <div class="actions">
+          <span class="badge">8 boards</span>
+          <button class="done-btn" data-done-id="octordle">Mark done</button>
+          <span class="timer" data-timer-for="octordle"></span>
+        </div>
+      </article>
+
+      <article class="card" data-game-id="worldle" data-url="https://worldle.teuteuf.fr/">
+        <div class="badge">Geography</div>
+        <h3><img class="mini-img" src="https://www.google.com/s2/favicons?domain=worldle.teuteuf.fr&sz=64" alt="">Worldle</h3>
+        <p class="description">Guess the country from its shape with distance and direction clues.</p>
+        <div class="actions">
+          <span class="badge">Daily</span>
+          <button class="done-btn" data-done-id="worldle">Mark done</button>
+          <span class="timer" data-timer-for="worldle"></span>
+        </div>
+      </article>
+
+      <article class="card" data-game-id="globle" data-url="https://globle-game.com/">
+        <div class="badge">Geography</div>
+        <h3><img class="mini-img" src="https://www.google.com/s2/favicons?domain=globle-game.com&sz=64" alt="">Globle</h3>
+        <p class="description">Heatmap hints guide you to the hidden country. Zero text spoilers.</p>
+        <div class="actions">
+          <span class="badge">Hot/Cold</span>
+          <button class="done-btn" data-done-id="globle">Mark done</button>
+          <span class="timer" data-timer-for="globle"></span>
+        </div>
+      </article>
+
+      <article class="card" data-game-id="narutodle" data-url="https://narutodle.net/">
+        <div class="badge">Anime &amp; Gaming</div>
+        <h3><img class="mini-img" src="https://www.google.com/s2/favicons?domain=narutodle.net&sz=64" alt="">Narutodle</h3>
+        <p class="description">Name the character, jutsu, or clan from Naruto hints.</p>
+        <div class="actions">
+          <button class="done-btn" data-done-id="narutodle">Mark done</button>
+          <span class="timer" data-timer-for="narutodle"></span>
+        </div>
+      </article>
+
+      <article class="card" data-game-id="pokedle-classic" data-url="https://pokedle.net/classic">
+        <div class="badge">Anime &amp; Gaming</div>
+        <h3><img class="mini-img" src="https://www.google.com/s2/favicons?domain=pokedle.net&sz=64" alt="">Pokedle Classic</h3>
+        <p class="description">Classic Pokémon guessing—stats, type, and silhouette clues.</p>
+        <div class="actions">
+          <button class="done-btn" data-done-id="pokedle-classic">Mark done</button>
+          <span class="timer" data-timer-for="pokedle-classic"></span>
+        </div>
+      </article>
+
+      <article class="card" data-game-id="pokedle" data-url="https://pokedle.com/">
+        <div class="badge">Anime &amp; Gaming</div>
+        <h3><img class="mini-img" src="https://www.google.com/s2/favicons?domain=pokedle.com&sz=64" alt="">Pokedle</h3>
+        <p class="description">Another spin on the Pokédex challenge with fresh twists.</p>
+        <div class="actions">
+          <button class="done-btn" data-done-id="pokedle">Mark done</button>
+          <span class="timer" data-timer-for="pokedle"></span>
+        </div>
+      </article>
+
+      <article class="card" data-game-id="smashdle" data-url="https://smashdle.net/">
+        <div class="badge">Anime &amp; Gaming</div>
+        <h3><img class="mini-img" src="https://www.google.com/s2/favicons?domain=smashdle.net&sz=64" alt="">Smashdle</h3>
+        <p class="description">Guess the Super Smash Bros. fighter from ability hints.</p>
+        <div class="actions">
+          <button class="done-btn" data-done-id="smashdle">Mark done</button>
+          <span class="timer" data-timer-for="smashdle"></span>
+        </div>
+      </article>
+
+      <article class="card" data-game-id="mangadle" data-url="https://mangadle.net/">
+        <div class="badge">Anime &amp; Gaming</div>
+        <h3><img class="mini-img" src="https://www.google.com/s2/favicons?domain=mangadle.net&sz=64" alt="">Mangadle</h3>
+        <p class="description">Identify the manga from its panels or prompts.</p>
+        <div class="actions">
+          <button class="done-btn" data-done-id="mangadle">Mark done</button>
+          <span class="timer" data-timer-for="mangadle"></span>
+        </div>
+      </article>
+
+      <article class="card" data-game-id="squirdle" data-url="https://squirdle.fireblend.com/daily.html">
+        <div class="badge">Anime &amp; Gaming</div>
+        <h3><img class="mini-img" src="https://www.google.com/s2/favicons?domain=squirdle.fireblend.com&sz=64" alt="">Squirdle (Daily)</h3>
+        <p class="description">Daily Pokémon guess with type, generation, and height clues.</p>
+        <div class="actions">
+          <button class="done-btn" data-done-id="squirdle">Mark done</button>
+          <span class="timer" data-timer-for="squirdle"></span>
+        </div>
+      </article>
+
+      <article class="card" data-game-id="bandle" data-url="https://bandle.app/menu">
+        <div class="badge">Music</div>
+        <h3><img class="mini-img" src="https://www.google.com/s2/favicons?domain=bandle.app&sz=64" alt="">Bandle</h3>
+        <p class="description">Listen to clips and name the band—music lovers’ daily fix.</p>
+        <div class="actions">
+          <button class="done-btn" data-done-id="bandle">Mark done</button>
+          <span class="timer" data-timer-for="bandle"></span>
+        </div>
+      </article>
+
+      <article class="card" data-game-id="rankdle" data-url="https://rankdle.com/">
+        <div class="badge">Sports &amp; Stats</div>
+        <h3><img class="mini-img" src="https://www.google.com/s2/favicons?domain=rankdle.com&sz=64" alt="">Rankdle</h3>
+        <p class="description">Rank the highlights in the right order—NBA, NFL, and more.</p>
+        <div class="actions">
+          <button class="done-btn" data-done-id="rankdle">Mark done</button>
+          <span class="timer" data-timer-for="rankdle"></span>
+        </div>
+      </article>
+
+      <article class="card" data-game-id="weddle" data-url="https://www.weddlegame.com/">
+        <div class="badge">Sports &amp; Stats</div>
+        <h3><img class="mini-img" src="https://www.google.com/s2/favicons?domain=www.weddlegame.com&sz=64" alt="">Weddle</h3>
+        <p class="description">NFL player guessing with fantasy-style hints.</p>
+        <div class="actions">
+          <button class="done-btn" data-done-id="weddle">Mark done</button>
+          <span class="timer" data-timer-for="weddle"></span>
+        </div>
+      </article>
+
+      <article class="card" data-game-id="footdle" data-url="https://footdle.com/">
+        <div class="badge">Sports &amp; Stats</div>
+        <h3><img class="mini-img" src="https://www.google.com/s2/favicons?domain=footdle.com&sz=64" alt="">Footdle</h3>
+        <p class="description">Footballer (soccer) guessing—club, league, position clues.</p>
+        <div class="actions">
+          <button class="done-btn" data-done-id="footdle">Mark done</button>
+          <span class="timer" data-timer-for="footdle"></span>
+        </div>
+      </article>
+
+      <article class="card" data-game-id="poeltl" data-url="https://poeltl.nbpa.com/landing-page">
+        <div class="badge">Sports &amp; Stats</div>
+        <h3><img class="mini-img" src="https://upload.wikimedia.org/wikipedia/commons/7/7a/Basketball.png" alt="">Poeltl</h3>
+        <p class="description">NBA player guessing—silhouette plus stat filters.</p>
+        <div class="actions">
+          <button class="done-btn" data-done-id="poeltl">Mark done</button>
+          <span class="timer" data-timer-for="poeltl"></span>
+        </div>
+      </article>
+
+      <article class="card" data-game-id="animdle" data-url="https://animdle.com/opening">
+        <div class="badge">Anime &amp; Gaming</div>
+        <h3><img class="mini-img" src="https://www.google.com/s2/favicons?domain=animdle.com&sz=64" alt="">Animdle</h3>
+        <p class="description">Guess the anime from the opening sequence hints.</p>
+        <div class="actions">
+          <button class="done-btn" data-done-id="animdle">Mark done</button>
+          <span class="timer" data-timer-for="animdle"></span>
+        </div>
+      </article>
+
+      <article class="card" data-game-id="guesstheopening" data-url="https://guesstheopening.com/anime">
+        <div class="badge">Anime &amp; Gaming</div>
+        <h3><img class="mini-img" src="https://www.google.com/s2/favicons?domain=guesstheopening.com&sz=64" alt="">Guess The Opening</h3>
+        <p class="description">Anime opening quiz—name the show from the clip.</p>
+        <div class="actions">
+          <button class="done-btn" data-done-id="guesstheopening">Mark done</button>
+          <span class="timer" data-timer-for="guesstheopening"></span>
+        </div>
+      </article>
+    </div>
+  </main>
+
+  <footer>
+    <div>Made for IFC • Teuteuf-style launchpad.</div>
+    <div>Tip: Add this page as a home-screen shortcut for mobile.</div>
+  </footer>
+
+  <script>
+    // Theme toggle
+    const body = document.body;
+    const themeToggle = document.getElementById('theme-toggle');
+    const THEME_KEY = 'ifc-teuteuf-theme';
+    function applyTheme(theme) {
+      body.setAttribute('data-theme', theme);
+      themeToggle.textContent = theme === 'light' ? 'Switch to dark' : 'Switch to light';
+      localStorage.setItem(THEME_KEY, theme);
+    }
+    const savedTheme = localStorage.getItem(THEME_KEY);
+    applyTheme(savedTheme === 'light' ? 'light' : 'dark');
+    themeToggle.addEventListener('click', () => {
+      const next = body.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
+      applyTheme(next);
+    });
+
+    // Completion tracking
+    const TODAY_KEY = () => {
+      const d = new Date();
+      return `ifc-teuteuf-complete-${d.getFullYear()}-${d.getMonth()+1}-${d.getDate()}`;
+    };
+    function loadCompleted() {
+      const raw = localStorage.getItem(TODAY_KEY());
+      try { return raw ? JSON.parse(raw) : {}; } catch { return {}; }
+    }
+    function saveCompleted(set) {
+      localStorage.setItem(TODAY_KEY(), JSON.stringify(set));
+    }
+    const completed = loadCompleted();
+    document.querySelectorAll('[data-game-id]').forEach(card => {
+      const id = card.dataset.gameId;
+      const btn = card.querySelector(`[data-done-id="${id}"]`);
+      if (completed[id]) {
+        card.classList.add('completed');
+        btn.classList.add('done');
+        btn.textContent = 'Done today';
+      }
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const nowDone = !completed[id];
+        completed[id] = nowDone;
+        if (!nowDone) delete completed[id];
+        saveCompleted(completed);
+        card.classList.toggle('completed', nowDone);
+        btn.classList.toggle('done', nowDone);
+        btn.textContent = nowDone ? 'Done today' : 'Mark done';
+      });
+      card.addEventListener('click', () => {
+        const url = card.dataset.url;
+        if (url) window.open(url, '_blank', 'noopener');
+      });
+    });
+
+    // Timers (default midnight ET for all; customize per game if needed)
+    const resets = {
+      wordle: { hour: 0, minute: 0, tz: 'America/New_York' },
+      connections: { hour: 0, minute: 0, tz: 'America/New_York' },
+      octordle: { hour: 0, minute: 0, tz: 'America/New_York' },
+      worldle: { hour: 0, minute: 0, tz: 'America/New_York' },
+      globle: { hour: 0, minute: 0, tz: 'America/New_York' },
+      narutodle: { hour: 0, minute: 0, tz: 'America/New_York' },
+      'pokedle-classic': { hour: 0, minute: 0, tz: 'America/New_York' },
+      pokedle: { hour: 0, minute: 0, tz: 'America/New_York' },
+      smashdle: { hour: 0, minute: 0, tz: 'America/New_York' },
+      mangadle: { hour: 0, minute: 0, tz: 'America/New_York' },
+      squirdle: { hour: 0, minute: 0, tz: 'America/New_York' },
+      bandle: { hour: 0, minute: 0, tz: 'America/New_York' },
+      rankdle: { hour: 0, minute: 0, tz: 'America/New_York' },
+      weddle: { hour: 0, minute: 0, tz: 'America/New_York' },
+      footdle: { hour: 0, minute: 0, tz: 'America/New_York' },
+      poeltl: { hour: 0, minute: 0, tz: 'America/New_York' },
+      animdle: { hour: 0, minute: 0, tz: 'America/New_York' },
+      guesstheopening: { hour: 0, minute: 0, tz: 'America/New_York' }
+    };
+    function msToNextReset(cfg) {
+      const { hour, minute, tz } = cfg;
+      const now = new Date();
+      const tzNow = new Date(now.toLocaleString('en-US', { timeZone: tz }));
+      const next = new Date(tzNow);
+      next.setHours(hour, minute, 0, 0);
+      if (next <= tzNow) next.setDate(next.getDate() + 1);
+      return next - tzNow;
+    }
+    function format(ms) {
+      const totalSec = Math.max(0, Math.floor(ms / 1000));
+      const h = String(Math.floor(totalSec / 3600)).padStart(2,'0');
+      const m = String(Math.floor((totalSec % 3600)/60)).padStart(2,'0');
+      const s = String(totalSec % 60).padStart(2,'0');
+      return `${h}:${m}:${s}`;
+    }
+    const timers = document.querySelectorAll('[data-timer-for]');
+    function tick() {
+      timers.forEach(el => {
+        const id = el.dataset.timerFor;
+        const cfg = resets[id] || resets.wordle;
+        const ms = msToNextReset(cfg);
+        el.textContent = `Resets in ${format(ms)} (ET)`;
+      });
+    }
+    tick();
+    setInterval(tick, 1000);
+
+    // Stagger animations
+    document.querySelectorAll('.card').forEach((card, idx) => {
+      card.style.animationDelay = `${idx * 40}ms`;
+    });
+  </script>
+</body>
+</html>
+
+
+
+
