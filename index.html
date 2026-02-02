@@ -326,6 +326,9 @@
       <button id="auto-mark-btn" class="arcade-toggle-btn" style="margin-top: 16px; padding: 10px 18px; border: 2px solid var(--stroke); background: rgba(0,0,0,0.6); color: var(--text); font-family: 'Inter', system-ui; font-weight: 600; font-size: 13px; letter-spacing: 0.5px; cursor: pointer; border-radius: 6px; transition: all 120ms ease; position: relative; overflow: hidden;">
         <span class="toggle-text">AUTO-MARK: OFF</span>
       </button>
+      <div class="disclaimer-box">
+        <strong>Directory of third-party games.</strong> We do not host games or collect personal data. Clicking a game opens the official creator's site.
+      </div>
     </div>
   </header>
 
@@ -567,8 +570,13 @@
   </main>
 
   <footer>
-    <div>Made for IFC • Neon arcade hub.</div>
-    <div>Tip: Bookmark this page for daily runs.</div>
+    <div style="flex: 1; display: flex; flex-direction: column; gap: 8px;">
+      <div>Made for IFC • Neon arcade hub.</div>
+      <div style="font-size: 14px; opacity: 0.7; font-family: 'Inter', system-ui; max-width: 600px; line-height: 1.4;">
+        This site is a fan-made directory. All games are properties of their respective owners. We do not host, download, or collect personal information.
+      </div>
+    </div>
+    <div style="text-align: right; opacity: 0.7;">Tip: Bookmark this page for daily runs.</div>
   </footer>
 
   <script>
